@@ -1,4 +1,4 @@
-FROM php:7.2.16-fpm-alpine3.9
+FROM php:7.2.23-fpm-alpine3.9
 
 ARG BUILD_DATE
 
@@ -40,14 +40,14 @@ RUN apk add --update --no-cache \
     libjpeg-turbo-dev \
     libmcrypt-dev \
     libpng-dev \
-    && docker-php-ext-install -j"$(getconf _NPROCESSORS_ONLN)" iconv \
+    curl-dev\
+    libxml2-dev \
+    && docker-php-ext-install -j"$(getconf _NPROCESSORS_ONLN)" iconv simplexml xml curl xmlrpc\
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include \
     && docker-php-ext-install -j"$(getconf _NPROCESSORS_ONLN)" gd
 # gmp
 RUN apk add gmp gmp-dev \
     && docker-php-ext-install gmp
-
-
 
 # apcu
 RUN docker-php-source extract \
