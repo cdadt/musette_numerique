@@ -17,6 +17,15 @@ Crée rapidement un espace de travail local pour Moodle (Apache2, PHP-FPM et Mar
 7. Démarrer l'environnement: ```docker-compose up -d```
 8. Arrêt de l'environnement: ```docker-compose down```
 
+## Les tâches cron
+
+Les tâches cron seront effectuées par le cron de la VM
+
+1. Editer le crontab par ```` crontab -e````
+2. Rajouter la ligne: ```` */2 * * * * docker exec php-moodle /usr/local/bin/php admin/cli/cron.php````
+3. Relancer le service cron: ````/etc/init.d/cron restart```` 
+
+
 ## Mise en place https
 
 1. Dans config/httpdvhosts Modifier 000-default.conf pour 
