@@ -18,7 +18,7 @@ services:
       #- ${ROOT_DIR}/${APACHE_CONF}/:/usr/local/apache2/conf/httpd.conf
       - ${ROOT_DIR}/${APACHE_VHOST}/:/usr/local/apache2/conf/vhosts
       #- ${ROOT_DIR}/${APACHE_CONFD}/:/usr/local/apache2/conf/conf.d
-      #- ${ROOT_DIR}/${APACHE_SSL}/ :/usr/local/apache2/conf/ssl
+      - ${ROOT_DIR}/${APACHE_SSL}/ :/usr/local/apache2/conf/ssl
       - ${ROOT_DIR}/${APACHE_LOGS}/:/usr/local/apache2/logs:z
   
     volumes_from:
@@ -43,6 +43,8 @@ services:
       - ${ROOT_DIR}/moodledata:/usr/local/apache2/moodledata
     depends_on:
       - db
+    links:
+      - db
 
     networks:
       - moodle-net
@@ -54,8 +56,8 @@ services:
       
       - ./config/mariadb/:/etc/mysql/conf.d
       - ${MYSQL_STORAGE}/mariadb:/var/lib/mysql
-    ports:
-      - 3306:3306
+    #ports:
+    #  - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
