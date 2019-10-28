@@ -31,6 +31,7 @@ APACHE_CONF=./config/httpd/httpd.conf
 APACHE_VHOST=./config/httpd/vhosts/
 APACHE_CONFD=./config/httpd/conf.d/
 APACHE_LOGS=./logs/
+APACHE_SSL=./certs/
 
 # MAILHOG
 
