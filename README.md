@@ -17,6 +17,67 @@ Crée rapidement un espace de travail local pour Moodle (Apache2, PHP-FPM et Mar
 7. Démarrer l'environnement: ```docker-compose up -d```
 8. Arrêt de l'environnement: ```docker-compose down```
 
+## Mise en place https
+
+1. Dans config/httpdvhosts Modifier 000-default.conf pour 
+
+````
+<VirtualHost *:80>
+
+    ServerName poc-musette.site
+    ServerAlias www.poc-musette.site
+
+    RewriteEngine on
+    RewriteCond %{HTTPS} !on
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+
+</VirtualHost>
+
+<VirtualHost *:443>
+
+    ServerName poc-musette.site
+    ServerAlias www.poc-musette.site
+
+    DocumentRoot /usr/local/apache2/htdocs
+
+    <Directory /usr/local/apache2/htdocs>
+         Options -Indexes +FollowSymlinks +MultiViews
+       AllowOverride None
+        Require all granted
+    </Directory>
+
+    SSLEngine on
+    SSLCertificateFile /usr/local/apache2/conf/ssl/cert1.pem
+    SSLCertificateKeyFile /usr/local/apache2/conf/ssl/privkey1.pem
+    SSLCertificateChainFile /usr/local/apache2/conf/ssl/chain1.pem
+    SSLProtocol all -SSLv2 -SSLv3
+    SSLHonorCipherOrder on
+   # SSLCompression off
+    SSLOptions +StrictRequire
+    SSLCipherSuite ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    LogLevel warn
+    ErrorLog /usr/local/apache2/www.poc-musette.site-error.log
+    CustomLog /usr/local/apache2/www.poc-musette.site-access.log combined
+
+</VirtualHost>
+
+````
+
+2. Effectuer la commande:
+
+````
+docker run -it --rm --name certbot -p 80:80 -p 443:443 -v "/etc/letsencrypt:/etc/letsencrypt" -v "/var/lib/letsencrypt:/var/lib/letsencrypt" certbot/certbot certonly --standalone --email "xrog2005@gmail.com" -d "www.poc-musette.site"
+````
+
+3. Copier les certificats dans le dossier certs
+
+````
+cp /opt/letsencrypt/archive/www.poc-musette.site/*.* /opt/moodle/certs/
+````
+
+**ATTENTION au droits du dossier**
 
 ## Structure du docker-compose
 
